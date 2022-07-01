@@ -1,0 +1,26 @@
+.site-layout .site-layout-background {
+  background: #fff;
+}
+.ant-layout-sider {
+  background-color: #ffc500;
+}
+.ant-menu-item {
+    color: #520044!important;
+    font-size: 18px;
+    font-weight: 700;
+}
+.ant-menu-item-icon svg {
+    font-size: 18px;
+}
+.ant-menu-item-selected {
+    background-color: #520044!important;
+}
+.logo {
+    width: 100px;
+    margin: 20px 0 10px 20px;
+    background-color: #000;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 0 0 3px #E74C3C, 0 0 0 6px #F9E79F, 0 0 0 9px #45B39D;
+    cursor: pointer;
+}

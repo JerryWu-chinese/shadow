@@ -1,0 +1,23 @@
+.ant-modal-body {
+    padding: 0;
+}
+.ant-modal-content {
+    border-radius: 8px;
+    box-shadow: 0 0 20px #ccc;
+}
+.my-input {
+    height: 42px;
+    padding: 11px;
+    font-size: 16px;
+    line-height: 16px;
+    border-radius: 5px
+}
+select{
+    outline: none;
+}
+button[ant-click-animating-without-extra-node]:after {
+    border: 0 none;
+    opacity: 0;
+    animation:none 0 ease 0 1 normal;
+    outline:none;
+}

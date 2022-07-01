@@ -1,0 +1,16 @@
+.register {
+    display: inline-block;
+    position: absolute;
+    top: 27%;
+    left: 37%;
+    width: 14vw;
+    padding: 10px;
+    background-color: #39424D;
+    border-radius: 20px;
+}
+.register p {
+    margin-bottom: 15px;
+    font-size: 26px;
+    font-weight: 700;
+    color: #fff
+}
