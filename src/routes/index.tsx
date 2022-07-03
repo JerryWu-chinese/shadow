@@ -8,15 +8,15 @@ const routes: RouteObject[] = [
     },
     {
         path: '/android',
-        element: (<div>Android</div>)
+        element: <div>Android</div>
     },
     {
         path: '/apple',
-        element: (<div>Apple</div>)
+        element: <div>Apple</div>
     },
     {
         path: '/windows',
-        element: (<div>Windows</div>)
+        element: <div>Windows</div>
     }
 ]
 

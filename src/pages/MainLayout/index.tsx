@@ -12,6 +12,7 @@ import { Layout, Menu } from 'antd';
 import {useNavigate, useRoutes} from 'react-router-dom';
 import routes from '../../routes';
 import Register from '../../components/Register';
+import Login from '../../components/Login';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -95,6 +96,7 @@ const MainLayout: React.FC = (): ReactElement => {
                 </Layout>
             </Layout>
             <Register />
+            <Login />
         </>
     )
 }

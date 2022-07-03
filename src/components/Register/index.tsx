@@ -1,16 +1,20 @@
-import React, { ReactElement, useState } from 'react';
 import './index.css';
+import React, { ReactElement, Attributes, useState } from 'react';
 import { Modal, Divider, Row, Col, Input, Button } from 'antd';
-import { ExclamationCircleOutlined, CloseOutlined } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import {isRegister} from '../../redux/actions/register';
+import {isLogin} from '../../redux/actions/login';
+import MyAlert from './MyAlert';
 
+//props 接口
 interface IStore {
-    register: boolean;
+    register: boolean
 }
-interface IProps extends IStore {
-    isRegister: Function
+interface IProps extends React.AllHTMLAttributes<Attributes>, IStore {
+    isRegister: Function;
+    isLogin: Function
 }
+//表单 接口
 interface IDate {
     year: string;
     month: string;
@@ -24,10 +28,24 @@ interface IForm {
     date: IDate;
     sex: number
 }
+//输入框边框颜色 接口
 interface IBorder {
     [propName: string]: string
 }
 
+//输入框边框颜色（初始）
+const BorderColor: IBorder = {
+    firstName: '#ccd0d5',
+    lastName: '#ccd0d5',
+    contact: '#ccd0d5',
+    passWord: '#ccd0d5',
+    year: '#ccd0d5',
+    month: '#ccd0d5',
+    day: '#ccd0d5',
+    sex: '#ccd0d5'
+}
+
+//注册组件
 const Register: React.FC<IProps> = (props: IProps): ReactElement => {
     const year: Array<number> = [2022];
     for(let i: number = 0; i < 119; i++)
@@ -48,17 +66,15 @@ const Register: React.FC<IProps> = (props: IProps): ReactElement => {
         },
         sex: 0
     });
-    const [borderColor, setBorderColor] = useState<IBorder>({
-        firstName: '#ccd0d5',
-        lastName: '#ccd0d5',
-        contact: '#ccd0d5',
-        passWord: '#ccd0d5',
-        year: '#ccd0d5',
-        month: '#ccd0d5',
-        day: '#ccd0d5',
-        sex: '#ccd0d5'
-    })
-    const [visible, setVisible] = useState<boolean>(false);
+    //输入框边框颜色
+    const [borderColor, setBorderColor] = useState<IBorder>(BorderColor);
+    const [alertVisible, setAlerVisible] = useState<boolean>(false);    //是否显示提示栏 MyAlert
+    //传入提示栏 MyAlert 的数据(props)
+    const alertTitle = '注册信息有误！';
+    const alertMsg = [
+        '请检查手机号或邮箱格式',
+        '密码长度应在 8 - 26 位字母和数字'
+    ];
 
     const handleOk = () => {
         props.isRegister(false);
@@ -66,26 +82,24 @@ const Register: React.FC<IProps> = (props: IProps): ReactElement => {
     const handleCancel = () => {
         props.isRegister(false);
     };
-    const nameChange: Function = (type: number): Function => {
-        return (e: React.ChangeEvent<HTMLInputElement>): void => {
-            if(type === 0)
-            {
-                setFromData({...formData, firstName: e.target.value});
-                return;
-            }
-            setFromData({...formData, lastName: e.target.value});
-        }
-    }
-    const contactChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-        setFromData({...formData, contact: e.target.value});
-    }
-    const pwdChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-        setFromData({...formData, passWord: e.target.value});
-    }
-    const dateChange: Function = (type: string): Function => {
-        return (e: React.ChangeEvent<HTMLSelectElement>): void => {
+    //若输入数据，则做相应修改
+    //  根据传入的 type 参数的不同，实现了功能的复用
+    const onGeneralChange: Function = (type: string): Function => {
+        return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
             const date: IDate = formData.date;
             switch(type) {
+                case 'firstName':
+                    setFromData({...formData, firstName: e.target.value});
+                    break;
+                case 'lastName':
+                    setFromData({...formData, lastName: e.target.value});
+                    break;
+                case 'contact':
+                    setFromData({...formData, contact: e.target.value});
+                    break;
+                case 'passWord':
+                    setFromData({...formData, passWord: e.target.value});
+                    break;
                 case 'year':
                     date.year = e.target.value;
                     setFromData({...formData, date: date});
@@ -98,14 +112,14 @@ const Register: React.FC<IProps> = (props: IProps): ReactElement => {
                     date.day = e.target.value;
                     setFromData({...formData, date: date});
                     break;
+                case 'sex':
+                    setFromData({...formData, sex: Number(e.target.value)})
+                    break;
                 default:
-                    return;
             }
         }
     }
-    const sexChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-        setFromData({...formData, sex: Number(e.target.value)})
-    }
+    //提交信息
     const onFinish = (): void => {
         let a: string;
         const errorBorder: Array<string> = [];
@@ -119,24 +133,30 @@ const Register: React.FC<IProps> = (props: IProps): ReactElement => {
         formData.sex ? a='' : errorBorder.push('sex');
         if(errorBorder.length > 0)
         {
-            let temp: IBorder = borderColor;
+            let temp: IBorder = BorderColor;
             errorBorder.forEach((item: string): string => {
                 temp = {...temp, [item]: '#E74C3C'}
                 return a;
             })
             setBorderColor(temp);
-            setVisible(true);
+            setAlerVisible(true);
             return;
         }
-        let temp:IBorder = borderColor;
-        Object.keys(borderColor).forEach((propName: string): void => {
-            temp[propName] = '#ccd0d5';
-        })
+        let temp:IBorder = BorderColor;
         setBorderColor(temp);
         alert('注册成功。');
+        props.isRegister(false);
     };
-    const onAltert = (): void=> {
-        setVisible(false);
+    //关闭提示栏 MyAlert
+    const onAltert: Function = (): Function=> {
+        return (): void => {
+            setAlerVisible(false);
+        }
+    }
+    //往登录
+    const isLogin = (): void => {
+        props.isRegister(false);
+        props.isLogin(true);
     }
 
     return (
@@ -153,36 +173,36 @@ const Register: React.FC<IProps> = (props: IProps): ReactElement => {
                 <div style={{padding: '16px'}}>
                     {/* 姓名 */}
                     <Row style={{height: '52px'}}>
-                        <Col span={11}><Input className='my-input' placeholder='姓' onChange={nameChange(0)} style={{borderColor: borderColor.firstName}} /></Col>
-                        <Col span={11} offset={2}><Input className='my-input' placeholder='名' onChange={nameChange(1)} style={{borderColor: borderColor.lastName}} /></Col>
+                        <Col span={11}><Input className='my-input' placeholder='姓' onChange={onGeneralChange('firstName')} style={{borderColor: borderColor.firstName}} /></Col>
+                        <Col span={11} offset={2}><Input className='my-input' placeholder='名' onChange={onGeneralChange('lastName')} style={{borderColor: borderColor.lastName}} /></Col>
                     </Row>
                     {/* 联系方式 */}
                     <Row style={{height: '52px'}}>
-                        <Col span={24}><Input className='my-input' placeholder='手机号或邮箱' onChange={contactChange} style={{borderColor: borderColor.contact}} /></Col>
+                        <Col span={24}><Input className='my-input' placeholder='手机号或邮箱' onChange={onGeneralChange('contact')} style={{borderColor: borderColor.contact}} /></Col>
                     </Row>
                     {/* 密码 */}
                     <Row style={{height: '52px'}}>
-                        <Col span={24}><Input className='my-input' placeholder='创建密码' onChange={pwdChange} style={{borderColor: borderColor.passWord}} /></Col>
+                        <Col span={24}><Input className='my-input' type='password' placeholder='创建密码' onChange={onGeneralChange('passWord')} style={{borderColor: borderColor.passWord}} /></Col>
                     </Row>
                     {/* 出生日期 */}
                     <p style={{margin: '2px 0 4px', fontSize: '13px', color: '#606770'}}>出生日期:</p>
                     <Row style={{height: '52px'}}>
                         <Col span={7}>
-                            <select className='my-input' style={{width: '100%', padding: '0 11px', borderColor: borderColor.year}} onChange={dateChange('year')}>
+                            <select className='my-input' style={{width: '100%', padding: '0 11px', borderColor: borderColor.year}} onChange={onGeneralChange('year')}>
                                 {year.map((item: number, index: number): ReactElement => {
                                     return <option value={item} key={index}>{item}</option>
                                 })}
                             </select>
                         </Col>
                         <Col span={7} offset={1}>
-                            <select className='my-input' style={{width: '100%', padding: '0 11px', borderColor: borderColor.month}} onChange={dateChange('month')}>
+                            <select className='my-input' style={{width: '100%', padding: '0 11px', borderColor: borderColor.month}} onChange={onGeneralChange('month')}>
                                 {month.map((item: number, index: number): ReactElement => {
                                     return <option value={item} key={index}>{item} 月</option>
                                 })}
                             </select>
                         </Col>
                         <Col span={8} offset={1}>
-                            <select className='my-input' style={{width: '100%', padding: '0 11px',  borderColor: borderColor.day}} onChange={dateChange('day')}>
+                            <select className='my-input' style={{width: '100%', padding: '0 11px',  borderColor: borderColor.day}} onChange={onGeneralChange('day')}>
                                 {day.map((item: number, index: number): ReactElement => {
                                     return <option value={item} key={index}>{item}</option>
                                 })}
@@ -192,9 +212,9 @@ const Register: React.FC<IProps> = (props: IProps): ReactElement => {
                     {/* 性别 */}
                     <p style={{margin: '2px 0 4px', fontSize: '13px', color: '#606770'}}>性别:</p>
                     <Row style={{height: '52px'}}>
-                        <Col span={7}><p className='my-input' style={{margin: 0, border: `1px solid ${borderColor.sex}`}}>男<input type='radio' name='gender' value='1' style={{float: 'right'}} onChange={sexChange} /></p></Col>
-                        <Col span={7} offset={1}><p className='my-input' style={{margin: 0, border: `1px solid ${borderColor.sex}`}}>女<input type='radio' name='gender' value='2' style={{float: 'right'}} onChange={sexChange} /></p></Col>
-                        <Col span={8} offset={1}><p className='my-input' style={{margin: 0, border: `1px solid ${borderColor.sex}`}}>自定义<input type='radio' name='gender' value='3' style={{float: 'right'}} onChange={sexChange} /></p></Col>
+                        <Col span={7}><p className='my-input' style={{margin: 0, border: `1px solid ${borderColor.sex}`}}>男<input type='radio' name='gender' value='1' style={{float: 'right'}} onChange={onGeneralChange('sex')} /></p></Col>
+                        <Col span={7} offset={1}><p className='my-input' style={{margin: 0, border: `1px solid ${borderColor.sex}`}}>女<input type='radio' name='gender' value='2' style={{float: 'right'}} onChange={onGeneralChange('sex')} /></p></Col>
+                        <Col span={8} offset={1}><p className='my-input' style={{margin: 0, border: `1px solid ${borderColor.sex}`}}>自定义<input type='radio' name='gender' value='3' style={{float: 'right'}} onChange={onGeneralChange('sex')} /></p></Col>
                     </Row>
                     <p style={{margin: '12px 0', fontSize: '13px', color: '#606770'}}>
                         使用我们服务的用户可能已把你的联系方式上传到 Facebook。
@@ -220,31 +240,12 @@ const Register: React.FC<IProps> = (props: IProps): ReactElement => {
                         fontSize: '18px',
                         textAlign: 'center'
                     }}>
-                        <a href='/#' style={{color: '#1877f2'}}>有账户了？</a>
+                        <a href='/#' style={{color: '#1877f2'}} onClick={isLogin}>有账户了？</a>
                     </p>
                 </div>
             </Modal>
-            {visible ? (
-                <div style={{
-                    position: 'absolute',
-                    top: 0,
-                    width: '100%',
-                    padding: '15px 15px 15px 24px',
-                    backgroundColor: '#fff2f0',
-                    border: '1px solid #ffccc7',
-                    zIndex: 1100
-                }}>
-                    <span style={{marginRight: '15px', fontSize: '24px', color: '#ff4d4f'}}><ExclamationCircleOutlined /></span>
-                    <div style={{display: 'inline-block', verticalAlign: 'top'}}>
-                        <p style={{fontSize: '24px'}}>
-                            Error
-                            <span style={{marginLeft: '10px', fontSize: '20px'}}>注册信息有误！</span>
-                        </p>
-                        <p style={{margin: 0, fontSize: '18px'}}>请检查手机号或邮箱格式</p>
-                        <p style={{margin: 0, fontSize: '18px'}}>密码长度应在 8 - 26 位字母和数字</p>
-                    </div>
-                    <span style={{float: 'right', marginRight: '15px', fontSize: '24px', cursor: 'pointer'}} onClick={onAltert}><CloseOutlined /></span>
-                </div>
+            {alertVisible ? (
+                <MyAlert title={alertTitle} message={alertMsg} onAltert={onAltert} />
             ) : null}
         </>
     )
@@ -252,7 +253,10 @@ const Register: React.FC<IProps> = (props: IProps): ReactElement => {
 
 const Component = connect(
     (store: IStore) => ({register: store.register}),
-    {isRegister: isRegister}
+    {
+        isRegister: isRegister,
+        isLogin: isLogin
+    }
 )(Register);
 
 export default Component;

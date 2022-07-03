@@ -9,6 +9,7 @@ import { SmileOutlined } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import {isRegister} from '../../redux/actions/register';
 
+//props 接口
 interface IStore {
     register: boolean;
 }
@@ -16,17 +17,20 @@ interface IProps extends IStore {
     isRegister: Function
 }
 
+//自定义组件，此处包裹图片
 const DemoBox: React.FC<{children: React.ReactNode; style?: Object}> = (props): ReactElement => (
     <div style={props.style}>
         {props.children}
     </div>
 )
 
+//首页组件
 const Enter: React.FC<IProps> = (props: IProps): ReactElement=> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [size, setSize] = useState<SizeType>('large');
+    const [size, setSize] = useState<SizeType>('large');    //antd 引入时自带 —— Button 大小
 
-    const isRegister = (e: React.MouseEvent<Element>) => {
+    //往注册
+    const isRegister = () => {
         props.isRegister(true);
     }
 

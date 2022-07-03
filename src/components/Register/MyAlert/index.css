@@ -1,0 +1,13 @@
+.my-alert {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    padding: 15px 15px 15px 24px;
+    background-color: #fff2f0;
+    border: 1px solid #ffccc7;
+    z-index: 1100
+}
+.message {
+    margin: 0;
+    font-size: 18px
+}
